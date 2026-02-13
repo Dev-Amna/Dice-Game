@@ -1,9 +1,13 @@
 import { useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const DiceGame = () => {
   const { initialPoint } = useLocalSearchParams();
+
+  const [index1, setIndex1] = useState(0);
+  const [index2, setIndex2] = useState(0);
+  const [sum, setSum] = useState(0);
 
   const diceList = [
     require("../assets/images/d1.png"),
@@ -20,9 +24,10 @@ const DiceGame = () => {
   }
 
 
-  const [index1, setIndex1] = useState(0);
-  const [index2, setIndex2] = useState(0);
-  const [sum, setSum] = useState(0);
+  useEffect(() => {
+    setSum(index1 + index2 + 2);
+
+  }, [index1, index2])
 
 
   function generateRandomNumber() {
