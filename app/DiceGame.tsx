@@ -7,6 +7,7 @@ const DiceGame = () => {
 
   const [index1, setIndex1] = useState(0);
   const [index2, setIndex2] = useState(0);
+  const [isFirstRoll, setIsFirstRoll] = useState(true);
   const [sum, setSum] = useState(0);
 
   const diceList = [
@@ -25,7 +26,9 @@ const DiceGame = () => {
 
 
   useEffect(() => {
-    setSum(index1 + index2 + 2);
+    if (!isFirstRoll) {
+      setSum(index1 + index2 + 2);
+    }
 
   }, [index1, index2])
 
@@ -37,6 +40,8 @@ const DiceGame = () => {
   function rollTheDice() {
     setIndex1(generateRandomNumber());
     setIndex2(generateRandomNumber());
+    isFirstRoll && setIsFirstRoll(false);
+
   }
   return (
     <View style={styles.container}>
@@ -47,7 +52,7 @@ const DiceGame = () => {
 
       <View style={styles.scroborad}>
         <Text style={styles.pointText}>Your Point : {initialPoint}</Text>
-        <Text style={styles.sumText}>Sum Text  : {sum}</Text>
+        <Text style={styles.sumText}>Dice Sum  : {sum}</Text>
       </View>
 
       <TouchableOpacity style={styles.btn} onPress={rollTheDice} >
