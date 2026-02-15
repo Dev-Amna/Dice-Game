@@ -3,12 +3,19 @@ import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const DiceGame = () => {
-  const { initialPoint } = useLocalSearchParams();
+  const msg = {
+    winMsg: "You wons!",
+    loseMsg: "You losts!",
+  }
 
+  const { initialPoint } = useLocalSearchParams();
   const [index1, setIndex1] = useState(0);
   const [index2, setIndex2] = useState(0);
   const [isFirstRoll, setIsFirstRoll] = useState(true);
+  const [status, setStatus] = useState();
   const [sum, setSum] = useState(0);
+
+
 
   const diceList = [
     require("../assets/images/d1.png"),
@@ -50,6 +57,7 @@ const DiceGame = () => {
         <Image source={diceList[index2]} style={styles.dice} />
       </View>
 
+      <Text style={styles.statusText}>{status}</Text>
       <View style={styles.scroborad}>
         <Text style={styles.pointText}>Your Point : {initialPoint}</Text>
         <Text style={styles.sumText}>Dice Sum  : {sum}</Text>
@@ -108,5 +116,8 @@ const styles = StyleSheet.create({
   scroborad: {
     justifyContent: "center",
     alignItems: "center"
+  },
+  statusText: {
+    fontSize :16,
   }
 })

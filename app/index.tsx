@@ -6,7 +6,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-nativ
 export default function Home() {
   let router = useRouter();
 
-  const [initialPoint, setInitialPoint] = useState("999");
+  const [initialPoint, setInitialPoint] = useState("800");
   const [error, setError] = useState("");
 
 
@@ -78,3 +78,5 @@ const styles = StyleSheet.create({
     margin: 5
   }
 })
+
+
