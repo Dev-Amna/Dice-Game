@@ -1,19 +1,23 @@
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const DiceGame = () => {
+  const { initialPoint } = useLocalSearchParams();
+  const [index1, setIndex1] = useState(0);
+  const [index2, setIndex2] = useState(0);
+  const [isFirstRoll, setIsFirstRoll] = useState(true);
+  const [status, setStatus] = useState("");
+  const [sum, setSum] = useState(0);
+  const firstDiceWinComb = [7, 11];
+  const firstDiceLoseComb = [2, 3, 12];
+  const [isGameRuning, setIsGameRuning] = useState(true);
   const msg = {
     winMsg: "You wons!",
     loseMsg: "You losts!",
   }
 
-  const { initialPoint } = useLocalSearchParams();
-  const [index1, setIndex1] = useState(0);
-  const [index2, setIndex2] = useState(0);
-  const [isFirstRoll, setIsFirstRoll] = useState(true);
-  const [status, setStatus] = useState();
-  const [sum, setSum] = useState(0);
+
 
 
 
@@ -39,7 +43,16 @@ const DiceGame = () => {
 
   }, [index1, index2])
 
-
+  // Show msg for win or lose
+  useEffect(() => {
+    if (firstDiceWinComb.includes(sum)) {
+      setStatus(msg.winMsg);
+      setIsGameRuning(false);
+    } else if (firstDiceLoseComb.includes(sum)) {
+      setStatus(msg.loseMsg);
+      setIsGameRuning(false);
+    }
+  }, [sum])
   function generateRandomNumber() {
     return Math.floor(Math.random() * 6);
   }
@@ -48,7 +61,16 @@ const DiceGame = () => {
     setIndex1(generateRandomNumber());
     setIndex2(generateRandomNumber());
     isFirstRoll && setIsFirstRoll(false);
+    setIsGameRuning(false);
+  }
 
+  function reset() {
+    setIndex1(0);
+    setIndex2(0);
+    setStatus("");
+    setSum(0);
+    setIsFirstRoll(true)
+    setIsGameRuning(true );
   }
   return (
     <View style={styles.container}>
@@ -57,17 +79,26 @@ const DiceGame = () => {
         <Image source={diceList[index2]} style={styles.dice} />
       </View>
 
-      <Text style={styles.statusText}>{status}</Text>
+      {status && <Text style={styles.statusText}>{status}</Text>}
       <View style={styles.scroborad}>
         <Text style={styles.pointText}>Your Point : {initialPoint}</Text>
         <Text style={styles.sumText}>Dice Sum  : {sum}</Text>
       </View>
 
-      <TouchableOpacity style={styles.btn} onPress={rollTheDice} >
-        <Text style={styles.btnText}>
-          ROLL
-        </Text>
-      </TouchableOpacity>
+      {/* Buttons */}
+      <View>
+        <TouchableOpacity disabled={!isGameRuning} style={[styles.btn, !isGameRuning && styles.btnDisabled]} onPress={rollTheDice} >
+          <Text style={styles.btnText}>
+            ROLL
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.btn, isGameRuning && styles.btnDisabled]} onPress={reset} >
+          <Text style={styles.btnText}>
+            Reset
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -93,11 +124,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     margin: 12
   },
+  btnDisabled: {
+    backgroundColor: "gray",
+    opacity: 0.5
+  },
   btn: {
     backgroundColor: "black",
     borderWidth: 1,
     borderRadius: 10,
     borderColor: "black",
+    margin: 5
   },
   btnText: {
     color: "white",
@@ -118,6 +154,6 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   statusText: {
-    fontSize :16,
+    fontSize: 60,
   }
 })
