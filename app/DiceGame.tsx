@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const DiceGame = () => {
   const { initialPoint } = useLocalSearchParams();
@@ -12,6 +12,8 @@ const DiceGame = () => {
   const firstDiceWinComb = [7, 11];
   const firstDiceLoseComb = [2, 3, 12];
   const [isGameRuning, setIsGameRuning] = useState(true);
+  const [target, setTarget] = useState(0);
+
   const msg = {
     winMsg: "You wons!",
     loseMsg: "You losts!",
@@ -45,23 +47,43 @@ const DiceGame = () => {
 
   // Show msg for win or lose
   useEffect(() => {
-    if (firstDiceWinComb.includes(sum)) {
-      setStatus(msg.winMsg);
-      setIsGameRuning(false);
-    } else if (firstDiceLoseComb.includes(sum)) {
-      setStatus(msg.loseMsg);
-      setIsGameRuning(false);
+    if (target > 0) {
+
+      // we have a target, and match the sum with the target
+      if (sum === target) {
+        setStatus(msg.winMsg);
+        setIsGameRuning(false);
+      }
+      else if (sum === 7) {
+        setStatus(msg.loseMsg);
+        setIsGameRuning(false);
+      }
+    }
+    else {
+      // First Roll
+      if (firstDiceWinComb.includes(sum)) {
+        setStatus(msg.winMsg);
+        setIsGameRuning(false);
+      }
+      else if (firstDiceLoseComb.includes(sum)) {
+        setStatus(msg.loseMsg);
+        setIsGameRuning(false);
+      }
+      else {
+        setTarget(sum);
+      }
     }
   }, [sum])
   function generateRandomNumber() {
     return Math.floor(Math.random() * 6);
   }
 
+
   function rollTheDice() {
     setIndex1(generateRandomNumber());
     setIndex2(generateRandomNumber());
     isFirstRoll && setIsFirstRoll(false);
-    setIsGameRuning(false);
+
   }
 
   function reset() {
@@ -70,7 +92,8 @@ const DiceGame = () => {
     setStatus("");
     setSum(0);
     setIsFirstRoll(true)
-    setIsGameRuning(true );
+    setIsGameRuning(true);
+    setTarget(0);
   }
   return (
     <View style={styles.container}>
@@ -83,6 +106,7 @@ const DiceGame = () => {
       <View style={styles.scroborad}>
         <Text style={styles.pointText}>Your Point : {initialPoint}</Text>
         <Text style={styles.sumText}>Dice Sum  : {sum}</Text>
+        {target > 0 && <Text style={styles.targetText}>Next Target : {target}</Text>}
       </View>
 
       {/* Buttons */}
@@ -93,7 +117,7 @@ const DiceGame = () => {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.btn, isGameRuning && styles.btnDisabled]} onPress={reset} >
+        <TouchableOpacity disabled={isGameRuning} style={[styles.btn, isGameRuning && styles.btnDisabled]} onPress={reset} >
           <Text style={styles.btnText}>
             Reset
           </Text>
@@ -155,5 +179,10 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 60,
+  },
+  targetText: {
+    fontSize: 22,
+    color: "green"
   }
+
 })
