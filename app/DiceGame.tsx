@@ -3,7 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const DiceGame = () => {
+  const WINNING_POINT = 100;
+  const LOSING_POINT = 100;
+  const MISS_POINT = 5;
+
   const { initialPoint } = useLocalSearchParams();
+  const [point, setPoint] = useState<number>(Number.parseInt(initialPoint as string));
   const [index1, setIndex1] = useState(0);
   const [index2, setIndex2] = useState(0);
   const [isFirstRoll, setIsFirstRoll] = useState(true);
@@ -18,9 +23,6 @@ const DiceGame = () => {
     winMsg: "You wons!",
     loseMsg: "You losts!",
   }
-
-
-
 
 
   const diceList = [
@@ -53,10 +55,15 @@ const DiceGame = () => {
       if (sum === target) {
         setStatus(msg.winMsg);
         setIsGameRuning(false);
+        setPoint(point + WINNING_POINT);
       }
       else if (sum === 7) {
         setStatus(msg.loseMsg);
         setIsGameRuning(false);
+        setPoint(point - LOSING_POINT);
+      }
+      else {
+        setPoint(point - MISS_POINT);
       }
     }
     else {
@@ -64,11 +71,14 @@ const DiceGame = () => {
       if (firstDiceWinComb.includes(sum)) {
         setStatus(msg.winMsg);
         setIsGameRuning(false);
+        setPoint(point + WINNING_POINT);
       }
       else if (firstDiceLoseComb.includes(sum)) {
         setStatus(msg.loseMsg);
         setIsGameRuning(false);
+        setPoint(point - LOSING_POINT);
       }
+
       else {
         setTarget(sum);
       }
@@ -104,7 +114,7 @@ const DiceGame = () => {
 
       {status && <Text style={styles.statusText}>{status}</Text>}
       <View style={styles.scroborad}>
-        <Text style={styles.pointText}>Your Point : {initialPoint}</Text>
+        <Text style={styles.pointText}>Your Point : {point }</Text>
         <Text style={styles.sumText}>Dice Sum  : {sum}</Text>
         {target > 0 && <Text style={styles.targetText}>Next Target : {target}</Text>}
       </View>
