@@ -29,7 +29,7 @@ export default function Home() {
       {error ? <Text style={styles.errText}>{error}</Text> : null}
       <TouchableOpacity onPress={() => {
         if (vaildateInput()) {
-          router.push({
+          router.replace({
             pathname: "/DiceGame",
             params: { initialPoint: initialPoint }
           });

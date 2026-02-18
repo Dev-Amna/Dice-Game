@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -6,7 +6,7 @@ const DiceGame = () => {
   const WINNING_POINT = 100;
   const LOSING_POINT = 100;
   const MISS_POINT = 5;
-
+  const router = useRouter();
   const { initialPoint } = useLocalSearchParams();
   const [point, setPoint] = useState<number>(Number.parseInt(initialPoint as string));
   const [index1, setIndex1] = useState(0);
@@ -18,6 +18,7 @@ const DiceGame = () => {
   const firstDiceLoseComb = [2, 3, 12];
   const [isGameRuning, setIsGameRuning] = useState(true);
   const [target, setTarget] = useState(0);
+  const [isGameOver, setIsGameOver] = useState(true);
 
   const msg = {
     winMsg: "You wons!",
@@ -47,6 +48,11 @@ const DiceGame = () => {
 
   }, [index1, index2])
 
+  useEffect(() => {
+    if (point > 0) {
+      setIsGameOver(false);
+    }
+  }, [point])
   // Show msg for win or lose
   useEffect(() => {
     if (target > 0) {
@@ -114,13 +120,21 @@ const DiceGame = () => {
 
       {status && <Text style={styles.statusText}>{status}</Text>}
       <View style={styles.scroborad}>
-        <Text style={styles.pointText}>Your Point : {point }</Text>
+        <Text style={styles.pointText}>Your Point : {point}</Text>
         <Text style={styles.sumText}>Dice Sum  : {sum}</Text>
         {target > 0 && <Text style={styles.targetText}>Next Target : {target}</Text>}
       </View>
 
       {/* Buttons */}
-      <View>
+      {isGameOver && <TouchableOpacity style={styles.btn} onPress={() => {
+        router.replace("/");
+      }} >
+        <Text style={styles.btnText}>
+          Back to home
+        </Text>
+      </TouchableOpacity>}
+
+      {!isGameOver && <View>
         <TouchableOpacity disabled={!isGameRuning} style={[styles.btn, !isGameRuning && styles.btnDisabled]} onPress={rollTheDice} >
           <Text style={styles.btnText}>
             ROLL
@@ -132,7 +146,7 @@ const DiceGame = () => {
             Reset
           </Text>
         </TouchableOpacity>
-      </View>
+      </View>}
     </View>
   )
 }
