@@ -1,6 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Audio } from "expo-av";
+
+
 
 const DiceGame = () => {
   const WINNING_POINT = 100;
@@ -41,6 +44,22 @@ const DiceGame = () => {
   }
 
 
+  async function playSound(file: number) {
+    if (file) {
+      const { sound } = await Audio.Sound.createAsync(file);
+
+      await sound.playAsync();
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      })
+    }
+    else {
+      console.warn("Invaild sound file ");
+    }
+  }
+
   useEffect(() => {
     if (!isFirstRoll) {
       setSum(index1 + index2 + 2);
@@ -62,11 +81,14 @@ const DiceGame = () => {
         setStatus(msg.winMsg);
         setIsGameRuning(false);
         setPoint(point + WINNING_POINT);
+        playSound(sound.win);
       }
       else if (sum === 7) {
         setStatus(msg.loseMsg);
         setIsGameRuning(false);
         setPoint(point - LOSING_POINT);
+        playSound(sound.lose);
+
       }
       else {
         setPoint(point - MISS_POINT);
@@ -78,11 +100,15 @@ const DiceGame = () => {
         setStatus(msg.winMsg);
         setIsGameRuning(false);
         setPoint(point + WINNING_POINT);
+        playSound(sound.win);
+
       }
       else if (firstDiceLoseComb.includes(sum)) {
         setStatus(msg.loseMsg);
         setIsGameRuning(false);
         setPoint(point - LOSING_POINT);
+        playSound(sound.lose);
+
       }
 
       else {
@@ -93,7 +119,6 @@ const DiceGame = () => {
   function generateRandomNumber() {
     return Math.floor(Math.random() * 6);
   }
-
 
   function rollTheDice() {
     setIndex1(generateRandomNumber());
@@ -151,7 +176,10 @@ const DiceGame = () => {
   )
 }
 
+/*
 
+
+*/
 export default DiceGame
 
 const styles = StyleSheet.create({
